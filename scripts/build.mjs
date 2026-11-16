@@ -1,0 +1,35 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {build} from 'esbuild';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const reviewStyles=fs.readFileSync(path.join(root,'src/review.css'));
+const reviewStylesName='review-'+createHash('sha256').update(reviewStyles).digest('hex').slice(0,12)+'.css';
+const brandingIcons={16:'assets/evil-rook.png',32:'assets/evil-rook.png',48:'assets/evil-rook.png',128:'assets/evil-rook.png'};
+const lichessAnalysis=['https://lichess.org/analysis','https://lichess.org/analysis/*','https://lichess.org/study/*'];
+const common={manifest_version:3,name:'OpenChess · Local Engine',version:'1.0.0',description:'Free local Chess.com analysis, move arrows and configurable move assistance. No account or cloud.',action:{default_popup:'panel.html',default_title:'OpenChess'},content_scripts:[{matches:['https://www.chess.com/*','https://chess.com/*'],js:['bridge.js'],world:'MAIN',run_at:'document_start'},{matches:['https://www.chess.com/*','https://chess.com/*'],js:['content.js'],run_at:'document_idle'}],web_accessible_resources:[{resources:['panel.html','panel.js','panel.css','engine/*'],matches:['https://www.chess.com/*','https://chess.com/*']}],content_security_policy:{extension_pages:"script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"}};
+for(const browser of ['chrome','firefox']){
+ const dir=path.join(root,'dist',browser);fs.mkdirSync(path.join(dir,'engine'),{recursive:true});fs.mkdirSync(path.join(dir,'licenses'),{recursive:true});
+ const manifest=structuredClone(common);
+ manifest.content_scripts[1].matches.push(...lichessAnalysis);
+ manifest.web_accessible_resources[0].matches.push('https://lichess.org/*');
+ if(browser==='chrome')manifest.cross_origin_embedder_policy={value:'require-corp'};
+ manifest.version=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version;
+ manifest.icons=brandingIcons;manifest.action.default_icon=brandingIcons;
+ manifest.web_accessible_resources[0].resources.push('assets/*');
+ if(browser==='firefox')manifest.browser_specific_settings={gecko:{id:'openchess-local@extension.local',strict_min_version:'128.0',data_collection_permissions:{required:['none']}}};
+ fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify(manifest,null,2));
+ for(const entry of ['panel','review','content','bridge'])await build({absWorkingDir:root,entryPoints:[`src/${entry}.js`],bundle:true,format:['panel','review'].includes(entry)?'esm':'iife',target:'es2022',outfile:path.join(dir,entry+'.js'),sourcemap:true,legalComments:'eof'});
+ for(const file of ['panel.html','panel.css'])fs.copyFileSync(path.join(root,'src',file),path.join(dir,file));
+ fs.writeFileSync(path.join(dir,reviewStylesName),reviewStyles);
+ const reviewPage=fs.readFileSync(path.join(root,'src/review.html'),'utf8');
+ fs.writeFileSync(path.join(dir,'review.html'),reviewPage.replace('href="review.css"',`href="${reviewStylesName}"`));
+ fs.cpSync(path.join(root,'src/assets'),path.join(dir,'assets'),{recursive:true});
+ for(const ext of ['js','wasm'])fs.copyFileSync(path.join(root,'node_modules/stockfish/bin',`stockfish-19-lite-single.${ext}`),path.join(dir,'engine',`stockfish-19-lite-single.${ext}`));
+ for(const ext of ['js','wasm'])fs.copyFileSync(path.join(root,'node_modules/stockfish/bin',`stockfish-19-single.${ext}`),path.join(dir,'engine',`stockfish-19-single.${ext}`));
+ fs.copyFileSync(path.join(root,'node_modules/stockfish/Copying.txt'),path.join(dir,'licenses/Stockfish-GPL-3.0.txt'));
+ fs.copyFileSync(path.join(root,'node_modules/chess.js/LICENSE'),path.join(dir,'licenses/chess.js-BSD-2-Clause.txt'));
+}
+fs.copyFileSync(path.join(root,'node_modules/stockfish/Copying.txt'),path.join(root,'LICENSE'));
+console.log('Built Chrome and Firefox extensions with local Stockfish 19 lite.');

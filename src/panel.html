@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#171719"><title>OpenChess</title><link rel="icon" href="assets/evil-rook.png"><link rel="stylesheet" href="panel.css"></head>
+<body>
+<header><div class="brand"><img class="brand-mark" src="assets/evil-rook.png" alt="" width="28" height="32"><h1>OpenChess</h1></div><button id="dismiss" class="icon-button" aria-label="Close panel" title="Close panel" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M7 17 17 7"/></svg></button></header>
+<main>
+<label class="strength-control">Suggestion mode<select id="mode"><option value="engine">Engine · fast search</option><option value="neural">Neural · full Stockfish network</option><option value="human">Human · practical moves</option></select></label>
+<label class="strength-control" for="profile"><span>Strength</span><div class="profile-select"><span id="profile-dot"></span><select id="profile" aria-label="Playing strength"></select></div></label>
+<section class="analysis" aria-label="Current analysis"><div><span class="metric-label">Move</span><strong id="best">—</strong></div><div class="score-block"><span class="metric-label" title="Positive favors White; negative favors Black.">Evaluation</span><span id="score">—</span></div></section>
+<div class="controls main-actions"><button id="analyze" class="primary"><span class="spinner" aria-hidden="true"></span>Analyze</button><button id="play" disabled>Play</button><button id="pause">Pause</button></div>
+<button id="game-review" class="review-link">Game Review ↗</button>
+<div id="notice" class="notice" hidden><span id="status" role="status" aria-live="polite"></span></div>
+<details id="variations"><summary>Lines <span aria-hidden="true">⌄</span></summary><ol id="lines" aria-label="Engine continuations"></ol><p id="lines-empty" class="note">Analyze a position first.</p></details>
+<details id="settings"><summary>Settings <span aria-hidden="true">⌄</span></summary><div class="settings">
+<label class="full-width">Engine<select id="model"><option value="lite">Stockfish Lite</option><option value="full">Stockfish 19 · full</option></select></label>
+<label class="full-width">Personality<select id="personality"><option value="balanced">Balanced</option><option value="attacker">Attacker</option><option value="positional">Positional</option><option value="defensive">Defensive</option><option value="opportunist">Opportunist</option><option value="gambiteer">Gambiteer</option></select></label>
+<label>Think time<select id="time"><option value="250">0.25 seconds</option><option value="500" selected>0.5 seconds</option><option value="1500">1.5 seconds</option><option value="4000">4 seconds</option><option value="10000">10 seconds</option></select></label>
+<label>Suggestions<select id="count"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select></label>
+<label class="check full-width"><input id="arrows" type="checkbox" checked>Show arrows</label>
+<label>Auto-play<select id="auto"><option value="off">Off</option><option value="w">White</option><option value="b">Black</option></select></label>
+<label>Move delay<select id="delay"><option value="500">0.5 seconds</option><option value="1500" selected>1.5 seconds</option><option value="3000">3 seconds</option></select></label>
+<p class="note full-width">Below 1320: approximate beginner styles. Other values: engine targets. Auto-play resets to Off.</p>
+</div></details>
+<details id="tools"><summary>Tools <span aria-hidden="true">⌄</span></summary><div class="settings"><label class="full-width">FEN<textarea id="fen" rows="3" spellcheck="false" placeholder="Paste a position"></textarea></label><div class="controls full-width"><button id="load">Load</button><button id="follow">Follow board</button><button id="copy">Copy</button></div><button id="export" class="full-width">Export analysis</button><button id="detach" class="full-width">Separate window ↗</button></div></details>
+<section id="stream-controls" hidden aria-label="Streamer controls">
+<div class="controls"><button id="freeze" aria-pressed="false">Freeze</button><button id="stream-copy">Copy FEN</button></div>
+<label>Layout<select id="stream-layout"><option value="full">Full analysis</option><option value="compact">Move and evaluation</option><option value="move">Move only</option></select></label>
+<label class="check"><input id="stream-hide-controls" type="checkbox">Hide controls for capture</label>
+</section>
+<button id="stream-show-controls" hidden>Show controls</button>
+</main><script type="module" src="panel.js"></script></body></html>

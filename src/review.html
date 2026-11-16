@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenChess Game Review</title><link rel="icon" href="assets/evil-rook.png"><link rel="stylesheet" href="review.css"></head>
+<body><header><img src="assets/evil-rook.png" alt="" width="34" height="38"><h1>Game Review</h1><button id="sound" aria-pressed="false">Sound off</button></header>
+<main><section aria-label="Board and navigation" id="board-column">
+<div id="board" aria-label="Review position"></div>
+<nav aria-label="Move navigation"><button id="first">First</button><button id="prev">Previous</button><button id="next">Next</button><button id="last">Latest</button><button id="flip">Flip board</button><button id="autoplay" aria-pressed="false">Autoplay</button></nav>
+<section class="card overview" aria-label="Game overview"><h2>Game overview</h2>
+<div id="accuracy"></div><div id="graph" aria-label="Estimated White winning chance by move"></div>
+<div id="tally" class="review-chips" aria-label="Move grades"></div><div id="turns" class="review-chips" aria-label="Key turning points"></div>
+</section>
+</section><section class="sidebar">
+<div class="card review-card"><div class="actions">
+<div class="budget-control"><span class="field-label">Search depth</span>
+<button id="budget-trigger" aria-expanded="false" aria-controls="budget-menu"><span id="budget-label">Standard</span></button>
+<div id="budget-menu" class="budget-menu" hidden>
+<button data-budget="300">Quick <small>0.3 seconds per search</small></button>
+<button data-budget="1000">Standard <small>1 second per search</small></button>
+<button data-budget="3000">Deep <small>3 seconds per search</small></button>
+</div>
+<select id="budget" hidden aria-label="Search depth"><option value="300">Quick</option><option value="1000" selected>Standard</option><option value="3000">Deep</option></select>
+</div><button id="review-all" class="primary"><span id="review-action">Review all</span></button></div>
+<p id="status" role="status">Waiting for moves. Import a PGN or play a move on the source board.</p>
+<div id="review-progress" hidden><progress id="progress" value="0" max="1" aria-label="Moves analyzed"></progress><span id="progress-count"></span></div>
+<div id="review-results">
+<div id="details" aria-live="polite"></div>
+<p id="coach" class="note"></p>
+<div class="review-chips"><button id="show-line" disabled>Show moves</button><button id="retry" disabled>Retry</button></div>
+<div id="practice" hidden></div>
+<ol id="moves" aria-label="Game moves"></ol></div></div>
+<details class="card"><summary>Import PGN</summary><label for="pgn">Paste one standard chess game</label><textarea id="pgn" rows="5"></textarea><button id="load">Load game</button><p id="import-error" role="alert"></p></details>
+<details class="card"><summary>Review settings</summary>
+<label><input id="coach-enabled" type="checkbox" checked> Show coach notes</label>
+<label><input id="hints-enabled" type="checkbox" checked> Show engine recommendations</label>
+<label>Autoplay delay <select id="autoplay-delay"><option value="700">0.7 seconds</option><option value="1500" selected>1.5 seconds</option><option value="3000">3 seconds</option></select></label></details>
+<p class="note">Accuracy and winning chances are OpenChess estimates. Positive scores favor White. Use live review where engine assistance is permitted.</p>
+</section></main><script type="module" src="review.js"></script></body></html>
